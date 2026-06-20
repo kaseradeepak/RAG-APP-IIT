@@ -3,6 +3,7 @@ from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
 
 CHROMA_DIR=Path('chroma_db')
 COLLECTION_NAME="policy_docs"
@@ -23,7 +24,8 @@ retriever = vector_store.as_retriever(
     search_kwargs={"k" : 3}
 )
 
-query = "What is the return window for electronics?"
+# query = "What is the return window for electronics?"
+query = "Explain me agentic ai"
 
 output_chunks = retriever.invoke(query)
 
@@ -60,13 +62,15 @@ Answer:
 # A | B | C | D => A -> B -> C -> D
 rag_chain = (
     {
-        "context" : output_chunks,
-        "question" : query
+        "context" : retriever,
+        "question" : RunnablePassthrough(),
     }
     | prompt
     | llm
-    | StrOutputParser
+    | StrOutputParser()
 )
 
-rag_chain.invoke()
+response = rag_chain.invoke(query)
+
+print(response)
 
