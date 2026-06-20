@@ -48,3 +48,5 @@ vector_store = Chroma(
 
 ids = vector_store.add_documents(documents=chunks)
 
+print("Ingested data successfuly in Chroma DB.")
+
